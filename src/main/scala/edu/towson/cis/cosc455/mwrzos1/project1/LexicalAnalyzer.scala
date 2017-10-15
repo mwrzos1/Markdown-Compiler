@@ -5,4 +5,18 @@ trait LexicalAnalyzer {
   def getChar() : Char
   def getNextToken() : Unit
   def lookup() : Boolean
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
