@@ -46,12 +46,28 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
     }
    }
     else {
-    println(" Syntax Error be should be : " + CONSTANTS.TITLEB + " Received " + Compiler.currentToken)
+    println(" Syntax Error should be : " + CONSTANTS.TITLEB + " Received " + Compiler.currentToken)
     System.exit(1)
     }
   }
 
-  def body() : Unit
+  def body() : Unit = {
+
+    if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)) {
+      paragraph()
+      body()
+    }
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.NEWLINE)) {
+      newline()
+      body()
+    }
+    else {
+      innerText() // still has to define this method
+      body()
+    }
+  }
+
+
   def paragraph() : Unit
   def heading() : Unit
   def variableDefine() : Unit
@@ -64,12 +80,14 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
 
   def requiredText(): Unit = {
     if (Compiler.currentToken.equals(CONSTANTS.specialChars)) {}
-    else  {
+    else {
       parseTree.+=(Compiler.currentToken)
       Compiler.Scanner.getNextToken()
       requiredText()
     }
-
   }
+   def innerText() : Unit = {
 
-  }
+    // in the process
+   }
+}
