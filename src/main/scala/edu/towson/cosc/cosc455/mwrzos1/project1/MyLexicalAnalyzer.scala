@@ -18,29 +18,35 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
 
   override def getChar(): Unit = {
 
+    // get the character
+   if (position < Compiler.length) {
+     nchar = Compiler.fileContents.charAt(position)
 
-    nchar = Compiler.fileContents.charAt(position)
+     // increase position by 1 each time you read character
+     position += 1
 
-    // increase position by 1 each time you read character
-    position += 1
-
-  }
+   }}
 
 
-  // reset
   def resetToken(): Unit = {
-
+    // to reset a token
     tokens = ""
 
   }
 
   override def getNextToken(): Unit = {
-    tokens = ""
+    resetToken()
     getChar()
     nonSpace()
-    if (CONSTANTS.specialChars.contains(nchar)) {
 
-      if (CONSTANTS.BOLD.contains(nchar)) {
+  //  if (Compiler.length >= position) {
+      if (CONSTANTS.specialChars.contains(nchar))
+
+        if (CONSTANTS.BOLD.contains(nchar)) {
+          addChar()
+          getChar()
+        }
+      if (CONSTANTS.ADDRESSE.contains(nchar)) {
         addChar()
         getChar()
       }
@@ -48,66 +54,56 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
         addChar()
         tokens += read()
       }
-    }
-    if (CONSTANTS.specialChars(4) == (nchar)) {
-      addChar()
-      tokens += read()
-    }
-    if (CONSTANTS.BRACKETE.contains(nchar)) {
-      addChar()
-
-      if (CONSTANTS.DOCE.contains(tokens.toUpperCase())) {
-        nonSpace()
-        if (position != Compiler.length) {
-          position = position - 1
-          getNextToken()
-          println("Error can't be anything after document end")
-          System.exit(1)
+      else if (CONSTANTS.specialChars(4) == (nchar)) {
+        addChar()
+        tokens += read()
+        if (CONSTANTS.NEWLINE.charAt(1) == (nchar)) {
+          addChar()
+          Compiler.currentToken = tokens
+          position += 1
+          return
+        }
+        if (CONSTANTS.BRACKETE.contains(nchar)) {
+          addChar()
+        }
+        if (CONSTANTS.DOCE.contains(tokens.toUpperCase())) {
+          nonSpace()
+          if (position - Compiler.length != 0) {
+            position = position - 1
+            getNextToken()
+            println("It shouldn't be anything after document ends")
+            System.exit(1)
+          }
         }
       }
-    }
 
-    else if (CONSTANTS.HEADING.contains(nchar)) {
-      addChar()
-      tokens += read()
-    }
-    else if (CONSTANTS.IMAGEB.charAt(0) == nchar) {
-      addChar()
-      getChar()
-      if (CONSTANTS.BRACKETE.contains(nchar)) {
+      else if (CONSTANTS.HEADING.contains(nchar)) {
         addChar()
+        tokens += read()
       }
-      else {
-        println("Lexical error. Wrong character. Received:" + nchar)
-        System.exit(1)
+      else if (CONSTANTS.IMAGEB.charAt(0) == nchar) {
+        addChar()
+        getChar()
+        if (CONSTANTS.IMAGEB.charAt(1) == nchar) {
+          addChar()
+          if (lookup()) Compiler.currentToken = tokens
+        }
       }
-    }
+      if (tokens.endsWith("\n")) {
+        tokens = tokens.substring(0, tokens.length - 1)
+      }
 
-    tokens = tokens.map(_.toUpper)
-
-    if (tokens.endsWith("\n")) {
-      tokens = tokens.substring(0, tokens.length - 1)
-    }
-    if (lookup()) {
-      Compiler.currentToken = tokens
-    }
-    else if (nchar.isLetterOrDigit || nchar.equals(':') || nchar.equals('.') || nchar.equals(',')) {
-      addChar()
-      tokens += read()
-      if ((nchar.equals(CONSTANTS.BRACKETE) || nchar.equals(CONSTANTS.PARAE) || nchar.equals(CONSTANTS.EQSIGN) || nchar.equals('\\'))) {
-        //Will decrement index so special characters aren't skipped
-        position -= 1
+      if (CONSTANTS.specialChars.contains(nchar)) addChar()
+      else if (nchar.isLetterOrDigit || nchar.equals(':') || nchar.equals('.') || nchar.equals(',')) {
+        addChar()
+        tokens += read()
+        if (nchar.toString == CONSTANTS.BRACKETE || nchar.toString == CONSTANTS.PARAE || nchar.toString == CONSTANTS.EQSIGN || nchar.equals('\\') || nchar.toString == CONSTANTS.ADDRESSE) {
+          position -= 1
+        }
+        Compiler.currentToken = tokens
       }
-      Compiler.currentToken = tokens
+      if (lookup()) Compiler.currentToken = tokens
     }
-    else if (nchar.equals('\n') || nchar.equals('\r') || nchar.equals('\t')) {
-      getNextToken() //Skip and get next token
-    }
-    else {
-      println("Lexical error: Illegal character received: '" + nchar + "'")
-      System.exit(1)
-    }
-  }
 
     def lookup(): Boolean = {
 
@@ -126,20 +122,17 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
         getChar()
       }
       nchar match {
-
         case ('\n') => text += nchar
-        case ('\t') => text += nchar
-        case ('\r') => text += nchar
-        case _ => text += nchar
+        case ('\r') => getChar(); if (nchar == '\t') text += nchar
+        case _ => {}
       }
       return text
     }
 
     def nonSpace(): Unit = {
 
-      while ((nchar.equals(' ') || nchar.equals('\n') || nchar.equals('\r') || nchar.equals('\t'))) {
+      while ((nchar.equals(' ') || nchar.equals('\n') || nchar.equals('\r') || nchar.equals('\t')) && (position < Compiler.length) ) {
         getChar()
       }
     }
-
 }
