@@ -1,5 +1,4 @@
-package edu.towson.cis.cosc455.mwrzos1.project1
-
+package edu.towson.cosc.cosc455.mwrzos1.project1
 
 import scala.collection.mutable.ListBuffer
 object CONSTANTS {
@@ -16,7 +15,7 @@ object CONSTANTS {
   val PARAE : String = "\\PARAE"
   val BOLD : String = "*"
   val LISTITEM : String = "+"
-  val NEWLINE : String = "\\"
+  val NEWLINE : String = "\\\\"
   val LINKB : String = "["
   val ADDRESSB : String = "("
   val ADDRESSE : String = ")"
@@ -32,6 +31,7 @@ object CONSTANTS {
     NEWLINE, LINKB, ADDRESSB, ADDRESSE, IMAGEB, DEFB, EQSIGN, USEB)
 
 
+   //declaration of special characters for gittex
 
   var specialChars: ListBuffer[Char] = new ListBuffer[Char]
   val asterisk: Char  =  '*'
@@ -57,16 +57,8 @@ object CONSTANTS {
   specialChars += rightParentheses
 
 
-
-
-
-
-
-
-
-
-
-
+ // declaring end of line array
+  val EOFL: Array[Char] = Array ('\r', '\t', ' ', '\n')
 
 
 }
