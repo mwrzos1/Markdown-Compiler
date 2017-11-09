@@ -10,7 +10,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
 
   // Starting production for gittex language
     override def gittex(): Unit = {
-
+      //compare to current token if it match add to parse tree
     if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.DOCB)) {
 
       //add to parse tree if it match
@@ -57,7 +57,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
 
   override def body(): Unit = {
     if (Compiler.length == Compiler.Scanner.position){}
-    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)) {
+    else if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAB)||Compiler.currentToken.equalsIgnoreCase(CONSTANTS.PARAE)) {
       paragraph()
       body()
     }
@@ -96,7 +96,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
     }
 
   }
-
+   //more than 1 RHS algorithm
    def innerText(): Unit = {
 
      Compiler.currentToken match {
@@ -193,7 +193,6 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
       listItem()
     }
   }
-
    def innerItem(): Unit = {
 
     if (Compiler.currentToken.equalsIgnoreCase(CONSTANTS.USEB)) {
@@ -303,7 +302,7 @@ class MySyntaxAnalyzer extends SyntaxAnalyzer {
         requiredText()
       }
     }
-
+      //Accounting for special tokens such as ':', '.' ',' in text file
      def text(): Boolean = {
 
        var check : Boolean = false

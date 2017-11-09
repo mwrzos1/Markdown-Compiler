@@ -27,11 +27,9 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
 
    }}
 
-
+  // to reset a token function
   def resetToken(): Unit = {
-    // to reset a token
     tokens = ""
-
   }
 
   override def getNextToken(): Unit = {
@@ -39,61 +37,75 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
     getChar()
     nonSpace()
 
-  //  if (Compiler.length >= position) {
-      if (CONSTANTS.specialChars.contains(nchar))
 
+      if (CONSTANTS.specialChars.contains(nchar)) {
         if (CONSTANTS.BOLD.contains(nchar)) {
           addChar()
           getChar()
         }
-      if (CONSTANTS.ADDRESSE.contains(nchar)) {
-        addChar()
-        getChar()
-      }
-      else if (CONSTANTS.LISTITEM.contains(nchar)) {
-        addChar()
-        tokens += read()
-      }
-      else if (CONSTANTS.specialChars(4) == (nchar)) {
-        addChar()
-        tokens += read()
-        if (CONSTANTS.NEWLINE.charAt(1) == (nchar)) {
+        else if (CONSTANTS.ADDRESSE.contains(nchar)) {
           addChar()
-          Compiler.currentToken = tokens
-          position += 1
-          return
+          getChar()
         }
-        if (CONSTANTS.BRACKETE.contains(nchar)) {
+        else if (CONSTANTS.LISTITEM.contains(nchar)) {
           addChar()
+          tokens += read()
         }
-        if (CONSTANTS.DOCE.contains(tokens.toUpperCase())) {
-          nonSpace()
-          if (position - Compiler.length != 0) {
-            position = position - 1
-            getNextToken()
-            println("It shouldn't be anything after document ends")
-            System.exit(1)
+        else if (CONSTANTS.specialChars(4) == (nchar)) {
+          addChar()
+          tokens += read()
+          if (CONSTANTS.NEWLINE.charAt(1) == (nchar)) {
+            addChar()
+            Compiler.currentToken = tokens
+            position += 1
+            return
+          }
+          if (CONSTANTS.leftBracket == (nchar)) {
+            addChar()
+            Compiler.currentToken = tokens
+            return
+          }
+          if (CONSTANTS.BRACKETE.contains(nchar)) {
+            addChar()
+          }
+          if (CONSTANTS.DOCE.contains(tokens.toUpperCase())) {
+            nonSpace()
+            if (position - Compiler.length != 0) {
+              position = position - 1
+              getNextToken()
+              println("It shouldn't be anything after document ends")
+              System.exit(1)
+            }
           }
         }
-      }
-
-      else if (CONSTANTS.HEADING.contains(nchar)) {
-        addChar()
-        tokens += read()
-      }
-      else if (CONSTANTS.IMAGEB.charAt(0) == nchar) {
-        addChar()
-        getChar()
-        if (CONSTANTS.IMAGEB.charAt(1) == nchar) {
+        else if (CONSTANTS.HEADING.contains(nchar)) {
           addChar()
-          if (lookup()) Compiler.currentToken = tokens
+          tokens += read()
+        }
+        else if (CONSTANTS.IMAGEB.charAt(0) == nchar) {
+          addChar()
+          getChar()
+          if (CONSTANTS.IMAGEB.charAt(1) == nchar) {
+            addChar()
+            if (lookup()) Compiler.currentToken = tokens
+          }
+        }
+        else if (CONSTANTS.specialChars.contains(nchar))
+          {
+            addChar()
+          }
+        if (tokens.endsWith("\n") || tokens.endsWith("\t")) {
+          tokens = tokens.substring(0, tokens.length - 1)
+        }
+        if (lookup()) {
+          Compiler.currentToken = tokens
+          return
+        }
+        else {
+          println("Lexical error, invalid token received: " + tokens)
+          System.exit(1)
         }
       }
-      if (tokens.endsWith("\n")) {
-        tokens = tokens.substring(0, tokens.length - 1)
-      }
-
-      if (CONSTANTS.specialChars.contains(nchar)) addChar()
       else if (nchar.isLetterOrDigit || nchar.equals(':') || nchar.equals('.') || nchar.equals(',')) {
         addChar()
         tokens += read()
@@ -102,16 +114,15 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
         }
         Compiler.currentToken = tokens
       }
-      if (lookup()) Compiler.currentToken = tokens
     }
 
     def lookup(): Boolean = {
-
+      // if the tokens legal return true if not false
       if (CONSTANTS.Constants.contains(tokens.toUpperCase())) return true
       else return false
     }
 
-
+    //function that reads the text until the end of word, token or line
     def read(): String = {
       var text: String = ""
       getChar()
@@ -128,7 +139,7 @@ class MyLexicalAnalyzer extends LexicalAnalyzer {
       }
       return text
     }
-
+    //function call until no space found
     def nonSpace(): Unit = {
 
       while ((nchar.equals(' ') || nchar.equals('\n') || nchar.equals('\r') || nchar.equals('\t')) && (position < Compiler.length) ) {
